@@ -40,15 +40,12 @@ open endpoints no require Authentication.
     **Content example** : Return name and amount
 * Delete spent `DELETE /api/spent/{:id}`
 
-* Show all spent by date start/end `POST /api/spent`
+* Show all spent by date start/end `GET /api/spents`
 
     **Data constraints**
     
-    ```json
-    {
-        "start_date": "date time here in string",
-        "end_date": "date time here in string"
-    }
+    ```query
+    date_from=%s&date_to=%s
     ```
 
 
