@@ -9,89 +9,20 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"net/http"
-	"os"
-	"time"
+	"github.com/Gusarov2k/list-of-expenses/internal/postgres"
+	"github.com/Gusarov2k/list-of-expenses/internal/controllers"
 )
-
-type (
-	SpentIdParams struct {
-		Id int `query:"id" validate:"required"`
-	}
-
-	SpentParams struct {
-		Name 	string 	`json:"name" form:"name" query:"name" validate:"required"`
-		Amount  float32	`json:"amount" form:"amount" query:"amount" validate:"required"`
-	}
-
-	SpentUpdateParams struct {
-		Id      int `query:"id" validate:"required"`
-		Name 	string 	`json:"name" form:"name" validate:"required"`
-		Amount  float32	`json:"amount" form:"amount" validate:"required"`
-	}
-
-	SpentDataParams struct {
-		Start_date 	time.Time	`query:"date_from" validate:"required"`
-		End_date 	time.Time	`query:"date_to" validate:"required"`
-	}
-
-	CustomValidator struct {
-		validator *validator.Validate
-	}
-)
+type CustomValidator struct {
+	validator *validator.Validate
+}
 
 func (cv *CustomValidator) Validate(i interface{}) error {
 	return cv.validator.Struct(i)
 }
 
-// DB
-
-
-type (
-	Spent struct {
-		gorm.Model
-		Name string `gorm:"type:varchar(256);not null json:"name"`
-		Amount float32 `json:"amount"`
-	}
-
-	ShortSpent struct {
-		ID int `json:"id"`
-		Name string `json:"name"`
-		Amount float32 `json:"amount"`
-		CreatedAt time.Time `json:"crated_at"`
-		UpdatedAt time.Time `json:"updated_at"`
-	}
-)
-
-var (
-	PostgresHost           = getEnv("POSTGRES_HOST", "localhost")
-	PostgresPort           = getEnv("POSTGRES_PORT", "5432")
-	PostgresDB             = getEnv("POSTGRES_DB", "list_expense_development")
-	PostgresDBTest         = getEnv("POSTGRES_DB_TEST", "list_expense_test")
-	PostgresUser           = getEnv("POSTGRES_USER", "ivan")
-	PostgresPassword       = getEnv("POSTGRES_PASSWORD", "1234")
-	PostgresConnectTimeout = getEnv("POSTGRES_CONNECT_TIMEOUT", "3")
-
-	PostgresSys = fmt.Sprintf("user=%s password=%s host=%s port=%s dbname=%s connect_timeout=%s sslmode=disable",
-		PostgresUser, PostgresPassword, PostgresHost, PostgresPort, PostgresDB, PostgresConnectTimeout)
-
-	PostgresTest = fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s connect_timeout=%s sslmode=disable",
-		PostgresUser, PostgresPassword, PostgresHost, PostgresPort, PostgresDBTest, PostgresConnectTimeout)
-
-)
-
-func getEnv(key string, fallback string) string {
-	value := os.Getenv(key)
-	if value == "" {
-		value = fallback
-	}
-
-	return value
-}
-// DB
-
 func main()  {
 	// init DB
-	db, err := gorm.Open("postgres", PostgresSys)
+	db, err := gorm.Open("postgres", postgres.PostgresSys)
 	if err != nil {
 		panic("failed to connect database")
 	}
@@ -99,7 +30,7 @@ func main()  {
 	fmt.Printf("%s\n", err)
 	db.LogMode(true)
 
-	db.AutoMigrate(&Spent{})
+	db.AutoMigrate(&postgres.Spent{})
 	// init DB
 
 	e := echo.New()
@@ -110,9 +41,9 @@ func main()  {
 	g := e.Group("/api/v1")
 
 	g.GET("/spent/:id", func(c echo.Context) (err error) {
-		var spent Spent
-		var shorSpent ShortSpent
-		u := new(SpentIdParams)
+		var spent postgres.Spent
+		var shorSpent postgres.ShortSpent
+		u := new(controllers.SpentIdParams)
 		if err = c.Bind(u); err != nil {
 			return
 		}
@@ -130,23 +61,23 @@ func main()  {
 	})
 
 	g.POST("/spent", func(c echo.Context) (err error) {
-		u := new(SpentParams)
+		u := new(controllers.SpentParams)
 		if err = c.Bind(u); err != nil {
 			return
 		}
 		if err = c.Validate(u); err != nil {
 			return
 		}
-		spent := db.Create(&Spent{Name: u.Name, Amount: u.Amount})
+		spent := db.Create(&postgres.Spent{Name: u.Name, Amount: u.Amount})
 
 		return c.JSON(http.StatusCreated, spent.Value)
 	})
 
 	g.PUT("/spent/:id", func(c echo.Context) (err error) {
-		var spent Spent
-		var shortSpent ShortSpent
+		var spent postgres.Spent
+		var shortSpent postgres.ShortSpent
 
-		u := new(SpentUpdateParams)
+		u := new(controllers.SpentUpdateParams)
 		if err = c.Bind(u); err != nil {
 			return
 		}
@@ -158,14 +89,14 @@ func main()  {
 			return c.JSON(http.StatusNotFound, "spent not find")
 		}
 
-		db.Model(&spent).Updates(Spent{Name: u.Name, Amount: u.Amount})
+		db.Model(&spent).Updates(postgres.Spent{Name: u.Name, Amount: u.Amount})
 		copier.Copy(&shortSpent, &spent)
 		return c.JSON(http.StatusOK, shortSpent)
 	})
 
 	g.DELETE("/spent/:id", func(c echo.Context) (err error) {
-		var spent Spent
-		u := new(SpentIdParams)
+		var spent postgres.Spent
+		u := new(controllers.SpentIdParams)
 		if err = c.Bind(u); err != nil {
 			return
 		}
@@ -182,10 +113,10 @@ func main()  {
 	})
 
 	g.GET("/spents", func(c echo.Context) (err error) {
-		var spent []Spent
-		var shortSpent []ShortSpent
+		var spent []postgres.Spent
+		var shortSpent []postgres.ShortSpent
 
-		u := new(SpentDataParams)
+		u := new(controllers.SpentDataParams)
 		if err = c.Bind(u); err != nil {
 			return
 		}
