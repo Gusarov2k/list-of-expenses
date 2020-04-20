@@ -29,7 +29,7 @@ var (
 	PostgresDB             = getEnv("POSTGRES_DB", "list_expense_development")
 	PostgresDBTest         = getEnv("POSTGRES_DB_TEST", "list_expense_test")
 	PostgresUser           = getEnv("POSTGRES_USER", "ivan")
-	PostgresPassword       = getEnv("POSTGRES_PASSWORD", "Kup0lA")
+	PostgresPassword       = getEnv("POSTGRES_PASSWORD", "1234")
 	PostgresConnectTimeout = getEnv("POSTGRES_CONNECT_TIMEOUT", "3")
 
 	PostgresSys = fmt.Sprintf("user=%s password=%s host=%s port=%s dbname=%s connect_timeout=%s sslmode=disable",
