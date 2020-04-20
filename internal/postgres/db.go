@@ -7,20 +7,13 @@ import (
 )
 
 type (
-	Spent struct {
-		Id 			int
-		Name 		string
-		Amount 		float32
-		CreatedAt 	time.Time
-		UpdatedAt	time.Time
-	}
 
-	ShortSpent struct {
-		ID 			int `json:"id"`
-		Name 		string `json:"name"`
-		Amount 		float32 `json:"amount"`
-		CreatedAt 	time.Time `json:"crated_at"`
-		UpdatedAt 	time.Time `json:"updated_at"`
+	Spent struct {
+		Id 			int 		`json:"id"`
+		Name 		string 		`json:"name"`
+		Amount 		float32 	`json:"amount"`
+		CreatedAt 	time.Time 	`json:"crated_at"`
+		UpdatedAt 	time.Time 	`json:"updated_at"`
 	}
 )
 
