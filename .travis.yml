@@ -17,7 +17,7 @@ before_script:
   - "pwd"
 
 
-script: "golangci-lint run"
+script: "make lint"
 
 
 #script: "go test ./... -v -race -timeout 120s -count=1"
