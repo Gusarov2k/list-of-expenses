@@ -11,11 +11,10 @@ env:
 before_install:
   - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $GOPATH/bin v1.23.1
 
-jobs:
-  include:
-    - stage: lint
-      script: "golangci-lint run"
-    - stage: test
-      before_script:
-        - psql -c 'create database list_expense_test;' -U postgres
-      script: "go test ./... -v -race -timeout 120s -count=1"
+before_script:
+  - psql -c 'create database list_expense_test;' -U postgres
+
+script: "golangci-lint run"
+
+
+#script: "go test ./... -v -race -timeout 120s -count=1"

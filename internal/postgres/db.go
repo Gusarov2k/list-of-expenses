@@ -2,16 +2,17 @@ package postgres
 
 import (
 	"fmt"
-	"github.com/jinzhu/gorm"
 	"os"
 	"time"
 )
 
 type (
 	Spent struct {
-		gorm.Model
-		Name 	string `gorm:"type:varchar(256); not null`
-		Amount 	float32 `json:"amount"`
+		Id 			int
+		Name 		string
+		Amount 		float32
+		CreatedAt 	time.Time
+		UpdatedAt	time.Time
 	}
 
 	ShortSpent struct {
@@ -29,7 +30,7 @@ var (
 	PostgresDB             = getEnv("POSTGRES_DB", "list_expense_development")
 	PostgresDBTest         = getEnv("POSTGRES_DB_TEST", "list_expense_test")
 	PostgresUser           = getEnv("POSTGRES_USER", "ivan")
-	PostgresPassword       = getEnv("POSTGRES_PASSWORD", "1234")
+	PostgresPassword       = getEnv("POSTGRES_PASSWORD", "Kup0lA")
 	PostgresConnectTimeout = getEnv("POSTGRES_CONNECT_TIMEOUT", "3")
 
 	PostgresSys = fmt.Sprintf("user=%s password=%s host=%s port=%s dbname=%s connect_timeout=%s sslmode=disable",

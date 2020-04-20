@@ -15,7 +15,7 @@ type (
 	}
 
 	SpentUpdateParams struct {
-		Id      int `query:"id" validate:"required"`
+		Id      int 	`query:"id" validate:"required"`
 		Name 	string 	`json:"name" form:"name" validate:"required"`
 		Amount  float32	`json:"amount" form:"amount" validate:"required"`
 	}
