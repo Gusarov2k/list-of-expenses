@@ -21,7 +21,4 @@ before_script:
   - psql -c 'create database list_expense_test;' -U postgres
   - go env
 
-script: "make lint"
-
-
-#script: "go test ./... -v -race -timeout 120s -count=1"
+script: "make lint && make test"
