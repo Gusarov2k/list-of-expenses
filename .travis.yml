@@ -2,9 +2,10 @@ language: go
 
 services:
   - postgresql
+addons:
+  postgresql: "10"
 
 env:
-  - GO111MODULE=on'
   - POSTGRES_PASSWORD=postgres
   - POSTGRES_USER='1234'
 
@@ -13,8 +14,9 @@ before_install:
 
 before_script:
   - psql -c 'create database list_expense_test;' -U postgres
+  - go env
 
-script: "golangci-lint run -v --modules-download-mode=readonly"
+script: "make lint"
 
 
 #script: "go test ./... -v -race -timeout 120s -count=1"
