@@ -55,7 +55,9 @@ func main()  {
 			return c.JSON(http.StatusNotFound, "spent not find")
 		}
 
-		copier.Copy(&shorSpent, &spent)
+		if err := copier.Copy(&shorSpent, &spent); err != nil {
+			return
+		}
 
 		return c.JSON(http.StatusOK, shorSpent)
 	})
@@ -72,66 +74,5 @@ func main()  {
 
 		return c.JSON(http.StatusCreated, spent.Value)
 	})
-
-	g.PUT("/spent/:id", func(c echo.Context) (err error) {
-		var spent postgres.Spent
-		var shortSpent postgres.ShortSpent
-
-		u := new(controllers.SpentUpdateParams)
-		if err = c.Bind(u); err != nil {
-			return
-		}
-		if err = c.Validate(u); err != nil {
-			return
-		}
-		result := db.First(&spent, u.Id)
-		if result.Error != nil {
-			return c.JSON(http.StatusNotFound, "spent not find")
-		}
-
-		db.Model(&spent).Updates(postgres.Spent{Name: u.Name, Amount: u.Amount})
-		copier.Copy(&shortSpent, &spent)
-		return c.JSON(http.StatusOK, shortSpent)
-	})
-
-	g.DELETE("/spent/:id", func(c echo.Context) (err error) {
-		var spent postgres.Spent
-		u := new(controllers.SpentIdParams)
-		if err = c.Bind(u); err != nil {
-			return
-		}
-		if err = c.Validate(u); err != nil {
-			return
-		}
-		result := db.First(&spent, u.Id)
-		if result.Error != nil {
-			return c.JSON(http.StatusNotFound, "spent not find")
-		}
-
-		db.Delete(&spent)
-		return c.JSON(http.StatusOK, "spent deleted")
-	})
-
-	g.GET("/spents", func(c echo.Context) (err error) {
-		var spent []postgres.Spent
-		var shortSpent []postgres.ShortSpent
-
-		u := new(controllers.SpentDataParams)
-		if err = c.Bind(u); err != nil {
-			return
-		}
-		if err = c.Validate(u); err != nil {
-			return
-		}
-
-		result := db.Where("created_at >= ? AND updated_at <= ?", u.Start_date, u.End_date).Find(&spent)
-		if result.Error != nil {
-			return c.JSON(http.StatusNotFound, "spents not find")
-		}
-
-		copier.Copy(&shortSpent, &spent)
-		return c.JSON(http.StatusCreated, shortSpent)
-	})
-	
 	e.Logger.Fatal(e.Start(":3002"))
 }
