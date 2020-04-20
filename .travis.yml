@@ -1,9 +1,14 @@
 language: go
 
-services:
-  - postgresql
+go:
+  - "1.14.x"
+
 addons:
   postgresql: "10"
+  apt:
+    packages:
+      - postgresql-10
+      - postgresql-client-10
 
 env:
   - POSTGRES_PASSWORD=postgres
