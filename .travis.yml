@@ -13,6 +13,7 @@ before_install:
 
 before_script:
   - psql -c 'create database list_expense_test;' -U postgres
+  - go mod download
 
 script: "make lint"
 
