@@ -8,8 +8,8 @@ import (
 
 type (
 
-	Spent struct {
-		Id 			int 		`json:"id"`
+	Spents struct {
+		ID 			int 		`json:"id"`
 		Name 		string 		`json:"name"`
 		Amount 		float32 	`json:"amount"`
 		CreatedAt 	time.Time 	`json:"crated_at"`
